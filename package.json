@@ -9,15 +9,20 @@
   "description": "Parse a XML string into a proprietary syntax tree",
   "author": "Chris Bottin <chrisbottin@gmail.com>",
   "license": "MIT",
-  "main": "dist/index.js",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm5/index.js",
+  "es2015": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
+  "sideEffects": false,
   "scripts": {
     "lint": "eslint . --ext=js,ts",
     "clean": "rm -rf ./dist",
-    "compile": "npm run clean && npm run lint && npm run compile:commonjs && npm run compile:esnext",
-    "compile:commonjs": "tsc --module commonjs --outDir ./dist --noEmit false",
-    "compile:esnext": "tsc --module esnext --outDir ./dist/esnext --noEmit false",
+    "compile": "npm run clean && npm run lint && npm run compile:commonjs && npm run compile:esnext && npm run compile:types",
+    "compile:commonjs": "tsc --module commonjs --outDir ./dist/cjs --noEmit false",
+    "compile:esnext": "tsc --module esnext --outDir ./dist/esm --noEmit false",
+    "compile:types": "tsc --emitDeclarationOnly --declaration --declarationMap --outDir ./dist/types --noEmit false",
     "test": "mocha --require=ts-node/register --extension=js,ts --spec=test",
-    "prepublishOnly": "npm run test && npm run compile"
+    "prepublishOnly": "echo Please use publish.sh && exit 1"
   },
   "engines": {
     "node": ">= 14"

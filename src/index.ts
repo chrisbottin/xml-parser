@@ -325,6 +325,8 @@ function parseXml(xml: string, options: XmlParserOptions = {}): XmlParserResult 
     return parseDocument();
 }
 
-module.exports = parseXml;
+if (typeof module !== 'undefined' && typeof exports === 'object') {
+    module.exports = parseXml;
+}
 
 export default parseXml;
