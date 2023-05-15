@@ -41,6 +41,46 @@ describe('XML Parser', function() {
         }
     });
 
+    context('should honour strictMode option', function() {
+
+        it('test 1 - strictMode default', function() {
+            try {
+                xmlParser('<root><foo>bar</foo>');
+            } catch(err: any) {
+                assert.fail('Should not fail');
+            }
+        });
+
+        it('test 2 - strictMode OFF', function() {
+            try {
+                xmlParser('<root><foo>bar</foo>', {strictMode: false});
+            } catch(err: any) {
+                assert.fail('Should not fail');
+            }
+        });
+
+        it('test 3 - strictMode ON', function() {
+            try {
+                xmlParser('<root><foo>bar</foo>', {strictMode: true});
+                assert.fail('Should not fail');
+            } catch(err: any) {
+                assert.equal(err.message, 'Failed to parse XML');
+                assert.equal((err as ParsingError).cause, 'Closing tag not matching "</root>"');
+            }
+        });
+
+        it('test 4 - strictMode ON', function() {
+            try {
+                xmlParser('<root><content><p xml:space="preserve">This is <b>some</b> content.</contentXX></p>', {strictMode: true});
+                assert.fail('Should not fail');
+            } catch(err: any) {
+                assert.equal(err.message, 'Failed to parse XML');
+                assert.equal((err as ParsingError).cause, 'Closing tag not matching "</p>"');
+            }
+        });
+
+    });
+
     it('should support declarations', function() {
         const node = xmlParser('<?xml version="1.0" ?><foo></foo>');
 

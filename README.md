@@ -63,7 +63,12 @@ xmlParser(xml);
 
 ## Options
 
-- `filter` (`function(node) => boolean`) Function to filter out unwanted nodes by returning `false`.
+- `filter`: Function to filter out unwanted nodes by returning `false`.
+  - type: `function(node) => boolean`
+  - default: `() => true`
+- `strictMode`: True to throw an error when parsing XML document with invalid content like mismatched closing tags.
+  - type: `boolean`
+  - default: `false`
 
 ### Usage:
 

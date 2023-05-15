@@ -3,6 +3,10 @@ export type XmlParserOptions = {
      * Returns false to exclude a node. Default is true.
      */
     filter?: (node: XmlParserNode) => boolean|any;
+    /**
+     * True to throw an error when parsing XML document with invalid content like mismatched closing tags.
+     */
+    strictMode?: boolean;
 };
 
 export type XmlParserNodeType = 'Comment'|'Text'|'ProcessingInstruction'|'Element'|'DocumentType'|'CDATA';
@@ -198,7 +202,16 @@ function element(matchRoot: boolean): XmlParserNodeWrapper<XmlParserElementNode>
     }
 
     // closing
-    match(/^<\/\s*[\w-:.\u00C0-\u00FF]+>/);
+    if (parsingState.options.strictMode) {
+        const closingTag = `</${node.name}>`;
+        if (parsingState.xml.startsWith(closingTag)) {
+            parsingState.xml = parsingState.xml.slice(closingTag.length);
+        } else {
+            throw new ParsingError('Failed to parse XML', `Closing tag not matching "${closingTag}"`);
+        }
+    } else {
+        match(/^<\/\s*[\w-:.\u00C0-\u00FF]+>/);
+    }
 
     return {
         excluded,
@@ -318,7 +331,8 @@ function parseXml(xml: string, options: XmlParserOptions = {}): XmlParserResult 
         xml,
         options: {
             ...options,
-            filter
+            filter,
+            strictMode: options.strictMode === true
         }
     };
 
