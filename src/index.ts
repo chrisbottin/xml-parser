@@ -220,7 +220,11 @@ function element(matchRoot: boolean): XmlParserNodeWrapper<XmlParserElementNode>
 }
 
 function doctype(): XmlParserNodeWrapper<XmlParserDocumentTypeNode>|undefined {
-    const m = match(/^<!DOCTYPE\s+\S+\s+SYSTEM[^>]*>/) || match(/^<!DOCTYPE\s+\S+\s+PUBLIC[^>]*>/) || match(/^<!DOCTYPE\s+\S+\s+\[[^\]]*]>/);
+    const m =
+        match(/^<!DOCTYPE\s+\S+\s+SYSTEM[^>]*>/) ||
+        match(/^<!DOCTYPE\s+\S+\s+PUBLIC[^>]*>/) ||
+        match(/^<!DOCTYPE\s+\S+\s*\[[^\]]*]>/) ||
+        match(/^<!DOCTYPE\s+\S+\s*>/);
     if (m) {
         const node: XmlParserDocumentTypeNode = {
             type: 'DocumentType',

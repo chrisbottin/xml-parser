@@ -490,8 +490,8 @@ describe('XML Parser', function() {
 
     context('should support DOCTYPE', function() {
 
-        it('DOCTYPE with SYSTEM', function () {
-            const node = xmlParser('<?xml version="1.0" ?>\n<!DOCTYPE foo SYSTEM "foo.dtd">\n<foo></foo>');
+        function assertParser(doctype: string): void {
+            const node = xmlParser(`<?xml version="1.0" ?>\n${doctype}\n<foo></foo>`);
 
             const root: XmlParserElementNode = {
                 type: 'Element',
@@ -510,62 +510,30 @@ describe('XML Parser', function() {
                 },
                 root: root,
                 children: [
-                    {type: 'DocumentType', content: '<!DOCTYPE foo SYSTEM "foo.dtd">'},
+                    {type: 'DocumentType', content: doctype},
                     root
                 ]
             });
+        }
+
+        it('DOCTYPE with SYSTEM', function () {
+            assertParser('<!DOCTYPE foo SYSTEM "foo.dtd">');
         });
 
         it('DOCTYPE with PUBLIC', function () {
-            const node = xmlParser('<?xml version="1.0" ?>\n<!DOCTYPE name PUBLIC "-//Beginning XML//DTD Address Example//EN">\n<foo></foo>');
-
-            const root: XmlParserElementNode = {
-                type: 'Element',
-                name: 'foo',
-                attributes: {},
-                children: []
-            };
-
-            assert.deepEqual(node, {
-                declaration: {
-                    name: 'xml',
-                    type: 'ProcessingInstruction',
-                    attributes: {
-                        version: '1.0'
-                    }
-                },
-                root: root,
-                children: [
-                    {type: 'DocumentType', content: '<!DOCTYPE name PUBLIC "-//Beginning XML//DTD Address Example//EN">'},
-                    root
-                ]
-            });
+            assertParser('<!DOCTYPE name PUBLIC "-//Beginning XML//DTD Address Example//EN">');
         });
 
         it('DOCTYPE with inline entities', function () {
-            const node = xmlParser('<?xml version="1.0" ?>\n<!DOCTYPE foo [ <!ENTITY myentity1 "my entity value" >\n <!ENTITY myentity2 "my entity value" > ]>\n<foo></foo>');
+            assertParser('<!DOCTYPE foo [ <!ENTITY myentity1 "my entity value" >\n <!ENTITY myentity2 "my entity value" > ]>');
+            assertParser('<!DOCTYPE foo[<!ENTITY myentity1 "my entity value" >\n <!ENTITY myentity2 "my entity value" >]>');
+        });
 
-            const root: XmlParserElementNode = {
-                type: 'Element',
-                name: 'foo',
-                attributes: {},
-                children: []
-            };
-
-            assert.deepEqual(node, {
-                declaration: {
-                    name: 'xml',
-                    type: 'ProcessingInstruction',
-                    attributes: {
-                        version: '1.0'
-                    }
-                },
-                root: root,
-                children: [
-                    {type: 'DocumentType', content: '<!DOCTYPE foo [ <!ENTITY myentity1 "my entity value" >\n <!ENTITY myentity2 "my entity value" > ]>'},
-                    root
-                ]
-            });
+        it('DOCTYPE with empty inline entities', function () {
+            assertParser('<!DOCTYPE foo []>');
+            assertParser('<!DOCTYPE foo[]>');
+            assertParser('<!DOCTYPE foo [ ]>');
+            assertParser('<!DOCTYPE foo>');
         });
     });
 
