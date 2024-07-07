@@ -152,7 +152,7 @@ describe('XML Parser', function() {
     });
 
     it('should support weird whitespace', function() {
-        const node = xmlParser('<foo \n\n\nbar\n\n=   \nbaz>\n\nhello world</\n\nfoo>');
+        const node = xmlParser('<foo \n\n\nbar\n\n=   \nbaz>\n\nhello world</foo>');
         assert.deepEqual(node.root, {
             type: 'Element',
             name: 'foo',
@@ -257,6 +257,16 @@ describe('XML Parser', function() {
                     children: [{type: 'Text', content: 'bar'}]
                 }
             ]
+        });
+    });
+
+    it('should support closing tags with tailing whitespaces', function() {
+        const node = xmlParser('<a></a  \n>');
+        assert.deepEqual(node.root, {
+            type: 'Element',
+            name: 'a',
+            attributes: {},
+            children: []
         });
     });
 
