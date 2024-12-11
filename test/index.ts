@@ -580,6 +580,30 @@ describe('XML Parser', function() {
         });
     });
 
+    it('should correctly parse xml-stylesheet as first processing instruction', function() {
+        const node = xmlParser('<?xml-stylesheet href="style.xsl" type="text/xsl" ?><foo></foo>');
+
+        const root: XmlParserElementNode = {
+            type: 'Element',
+            name: 'foo',
+            attributes: {},
+            children: []
+        };
+
+        assert.deepEqual(node, {
+            declaration: {
+                name: 'xml-stylesheet',
+                type: 'ProcessingInstruction',
+                attributes: {
+                    href: 'style.xsl',
+                    type: 'text/xsl'
+                }
+            },
+            root: root,
+            children: [root]
+        });
+    });
+
     it('should support complex XML', function() {
         const node = xmlParser(`<?xml version="1.0" encoding="utf-8"?>
 <!-- Load the stylesheet -->
