@@ -547,7 +547,7 @@ describe('XML Parser', function() {
         });
     });
 
-    it('should support processing instructions', function() {
+    it('should support processing instructions at root level', function() {
         const node = xmlParser('<?xml version="1.0" ?><?xml-stylesheet href="style.xsl" type="text/xsl" ?><foo></foo>');
 
         const root: XmlParserElementNode = {
@@ -575,6 +575,35 @@ describe('XML Parser', function() {
                         type: 'text/xsl'
                     }
                 },
+                root
+            ]
+        });
+    });
+
+    it('should support processing instructions at any level', function() {
+        const node = xmlParser('<?xml version="1.0" ?><foo><?xml-multiple ?></foo>');
+
+        const root: XmlParserElementNode = {
+            type: 'Element',
+            name: 'foo',
+            attributes: {},
+            children: [{
+                name: 'xml-multiple',
+                type: 'ProcessingInstruction',
+                attributes: {}
+            }]
+        };
+
+        assert.deepEqual(node, {
+            declaration: {
+                name: 'xml',
+                type: 'ProcessingInstruction',
+                attributes: {
+                    version: '1.0'
+                }
+            },
+            root: root,
+            children: [
                 root
             ]
         });
