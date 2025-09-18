@@ -32,15 +32,6 @@ describe('XML Parser', function() {
         }
     });
 
-    it('should fail to parse when processing instruction attribute is badly formed', function() {
-        try {
-            xmlParser('<?xml version ?><foo></foo>');
-            assert.fail('Should fail');
-        } catch(err: any) {
-            assert.equal(err.message, 'Failed to parse XML');
-        }
-    });
-
     context('should honour strictMode option', function() {
 
         it('test 1 - strictMode default', function() {
@@ -95,9 +86,7 @@ describe('XML Parser', function() {
             declaration: {
                 name: 'xml',
                 type: 'ProcessingInstruction',
-                attributes: {
-                    version: '1.0'
-                }
+                content: 'version="1.0"'
             },
             root: root,
             children: [root]
@@ -463,9 +452,7 @@ describe('XML Parser', function() {
             declaration: {
                 name: 'xml',
                 type: 'ProcessingInstruction',
-                attributes: {
-                    version: '1.0'
-                }
+                content: 'version="1.0"'
             },
             root: root,
             children: [root]
@@ -489,9 +476,7 @@ describe('XML Parser', function() {
             declaration: {
                 name: 'xml',
                 type: 'ProcessingInstruction',
-                attributes: {
-                    version: '1.0'
-                }
+                content: 'version="1.0"'
             },
             root: root,
             children: [root]
@@ -514,9 +499,7 @@ describe('XML Parser', function() {
                 declaration: {
                     name: 'xml',
                     type: 'ProcessingInstruction',
-                    attributes: {
-                        version: '1.0'
-                    }
+                    content: 'version="1.0"'
                 },
                 root: root,
                 children: [
@@ -561,19 +544,14 @@ describe('XML Parser', function() {
             declaration: {
                 name: 'xml',
                 type: 'ProcessingInstruction',
-                attributes: {
-                    version: '1.0'
-                }
+                content: 'version="1.0"'
             },
             root: root,
             children: [
                 {
                     name: 'xml-stylesheet',
                     type: 'ProcessingInstruction',
-                    attributes: {
-                        href: 'style.xsl',
-                        type: 'text/xsl'
-                    }
+                    content: 'href="style.xsl" type="text/xsl"'
                 },
                 root
             ]
@@ -581,7 +559,7 @@ describe('XML Parser', function() {
     });
 
     it('should support processing instructions at any level', function() {
-        const node = xmlParser('<?xml version="1.0" ?><foo><?xml-multiple ?></foo>');
+        const node = xmlParser('<?xml version="1.0" ?><foo><?xml-multiple ?><?xml-stylesheet type="text/xsl" href="style.xsl"?></foo><?Pub *0000069616?>');
 
         const root: XmlParserElementNode = {
             type: 'Element',
@@ -590,7 +568,11 @@ describe('XML Parser', function() {
             children: [{
                 name: 'xml-multiple',
                 type: 'ProcessingInstruction',
-                attributes: {}
+                content: ''
+            }, {
+                content: 'type="text/xsl" href="style.xsl"',
+                name: 'xml-stylesheet',
+                type: 'ProcessingInstruction'
             }]
         };
 
@@ -598,13 +580,16 @@ describe('XML Parser', function() {
             declaration: {
                 name: 'xml',
                 type: 'ProcessingInstruction',
-                attributes: {
-                    version: '1.0'
-                }
+                content: 'version="1.0"'
             },
             root: root,
             children: [
-                root
+                root,
+                {
+                    name: 'Pub',
+                    type: 'ProcessingInstruction',
+                    content: '*0000069616'
+                }
             ]
         });
     });
@@ -623,10 +608,7 @@ describe('XML Parser', function() {
             declaration: {
                 name: 'xml-stylesheet',
                 type: 'ProcessingInstruction',
-                attributes: {
-                    href: 'style.xsl',
-                    type: 'text/xsl'
-                }
+                content: 'href="style.xsl" type="text/xsl"'
             },
             root: root,
             children: [root]
@@ -666,10 +648,7 @@ describe('XML Parser', function() {
             declaration: {
                 name: 'xml',
                 type: 'ProcessingInstruction',
-                attributes: {
-                    version: '1.0',
-                    encoding: 'utf-8'
-                }
+                content: 'version="1.0" encoding="utf-8"'
             },
             root: root,
             children: [
@@ -677,10 +656,7 @@ describe('XML Parser', function() {
                 {
                     name: 'xml-stylesheet',
                     type: 'ProcessingInstruction',
-                    attributes: {
-                        href: 'foo.xsl',
-                        type: 'text/xsl'
-                    }
+                    content: 'href="foo.xsl" type="text/xsl"'
                 },
                 {type: 'DocumentType', content: '<!DOCTYPE foo SYSTEM "foo.dtd">'},
                 root
@@ -711,10 +687,7 @@ describe('XML Parser', function() {
             declaration: {
                 name: 'xml',
                 type: 'ProcessingInstruction',
-                attributes: {
-                    version: '1.0',
-                    encoding: 'utf-8'
-                }
+                content: 'version="1.0" encoding="utf-8"'
             },
             root: root,
             children: [
@@ -760,20 +733,14 @@ describe('XML Parser', function() {
             declaration: {
                 name: 'xml',
                 type: 'ProcessingInstruction',
-                attributes: {
-                    version: '1.0',
-                    encoding: 'utf-8'
-                }
+                content: 'version="1.0" encoding="utf-8"'
             },
             root: root,
             children: [
                 {
                     name: 'xml-stylesheet',
                     type: 'ProcessingInstruction',
-                    attributes: {
-                        href: 'foo.xsl',
-                        type: 'text/xsl'
-                    }
+                    content: 'href="foo.xsl" type="text/xsl"'
                 },
                 {type: 'DocumentType', content: '<!DOCTYPE foo SYSTEM "foo.dtd">'},
                 root

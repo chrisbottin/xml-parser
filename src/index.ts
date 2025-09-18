@@ -31,7 +31,7 @@ export type XmlParserDocumentChildNode = XmlParserDocumentTypeNode|XmlParserProc
 export type XmlParserProcessingInstructionNode = {
     type: 'ProcessingInstruction';
     name: string;
-    attributes: Record<string, string>;
+    content: string;
 }
 
 
@@ -84,16 +84,16 @@ let parsingState: {
 };
 
 function nextChild() {
-    return element(false) || text() || comment() || cdata() || processingInstruction(false);
+    return element(false) || text() || comment() || cdata() || processingInstruction();
 }
 
 function nextRootChild() {
     match(/\s*/);
-    return element(true) || comment() || doctype() || processingInstruction(false);
+    return element(true) || comment() || doctype() || processingInstruction();
 }
 
 function parseDocument(): XmlParserResult {
-    const declaration = processingInstruction(true);
+    const declaration = processingInstruction();
     const children = [];
     let documentRootNode;
     let child = nextRootChild();
@@ -128,31 +128,30 @@ function parseDocument(): XmlParserResult {
     };
 }
 
-function processingInstruction(matchDeclaration: boolean): XmlParserNodeWrapper<XmlParserProcessingInstructionNode>|undefined {
-    const m = matchDeclaration ? match(/^<\?(xml(-stylesheet)?)\s*/) : match(/^<\?([\w-:.]+)\s*/);
+function processingInstruction(): XmlParserNodeWrapper<XmlParserProcessingInstructionNode>|undefined {
+    const m = match(/^<\?([\w-:.]+)\s*/);
     if (!m) return;
 
     // tag
     const node: XmlParserProcessingInstructionNode = {
         name: m[1],
         type: 'ProcessingInstruction',
-        attributes: {}
+        content: ''
     };
 
-    // attributes
-    while (!(eos() || is('?>'))) {
-        const attr = attribute();
-        if (attr) {
-            node.attributes[attr.name] = attr.value;
-        } else {
-            return;
-        }
+    const endMarkerIndex = parsingState.xml.indexOf('?>');
+
+    if (endMarkerIndex > -1) {
+        node.content = parsingState.xml.substring(0, endMarkerIndex).trim();
+        parsingState.xml = parsingState.xml.slice(endMarkerIndex);
+    } else {
+        throw new ParsingError('Failed to parse XML', 'ProcessingInstruction closing tag not found');
     }
 
     match(/\?>/);
 
     return {
-        excluded: matchDeclaration ? false : parsingState.options.filter(node) === false,
+        excluded: parsingState.options.filter(node) === false,
         node
     };
 }
