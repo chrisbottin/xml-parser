@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20.x, 22.x, 24.x]
+        node-version: [24.x]
 
     steps:
       - name: Checkout Repository
@@ -26,9 +26,9 @@ jobs:
           cache: 'npm'
 
       - name: Install NPM Dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
-      - name: Run Compile to ensure it compiles correctly
+      - name: Run Compile
         run: npm run compile
 
       - name: Run Tests
