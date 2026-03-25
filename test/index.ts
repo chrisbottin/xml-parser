@@ -37,7 +37,7 @@ describe('XML Parser', function() {
         it('test 1 - strictMode default', function() {
             try {
                 xmlParser('<root><foo>bar</foo>');
-            } catch(err: any) {
+            } catch {
                 assert.fail('Should not fail');
             }
         });
@@ -45,7 +45,7 @@ describe('XML Parser', function() {
         it('test 2 - strictMode OFF', function() {
             try {
                 xmlParser('<root><foo>bar</foo>', {strictMode: false});
-            } catch(err: any) {
+            } catch {
                 assert.fail('Should not fail');
             }
         });
