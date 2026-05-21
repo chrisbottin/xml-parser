@@ -423,6 +423,48 @@ describe('XML Parser', function() {
         });
     });
 
+    context('should support multilingual xml records', function () {
+        const languages = [
+            { tag: 'سجل', lang: 'ar', text: 'مرحبا بالعالم' },
+            { tag: 'রেকর্ড', lang: 'bn', text: 'হ্যালো বিশ্ব' },
+            { tag: 'εγγραφή', lang: 'el', text: 'Γειά σου Κόσμε' },
+            { tag: 'record', lang: 'en', text: 'Hello world' },
+            { tag: 'registro', lang: 'es', text: 'Hola mundo' },
+            { tag: 'enregistrement', lang: 'fr', text: 'Bonjour le monde' },
+            { tag: 'רשומה', lang: 'he', text: 'שלום עולם' },
+            { tag: 'लेख', lang: 'hi', text: 'नमस्ते दुनिया' },
+            { tag: 'գրառում', lang: 'hy', text: 'Բարև աշխարհ' },
+            { tag: '記録', lang: 'ja', text: 'こんにちは世界' },
+            { tag: 'ჩანაწერი', lang: 'ka', text: 'გამარჯობა მსოფლიო' },
+            { tag: '기록', lang: 'ko', text: '안녕하세요 세계' },
+            { tag: 'registro', lang: 'pt', text: 'Olá mundo' },
+            { tag: 'запись', lang: 'ru', text: 'Привет мир' },
+            { tag: 'பதிவு', lang: 'ta', text: 'வணக்கம் உலகம்' },
+            { tag: 'บันทึก', lang: 'th', text: 'สวัสดีชาวโลก' },
+            { tag: 'kayıt', lang: 'tr', text: 'Merhaba dünya' },
+            { tag: 'запис', lang: 'uk', text: 'Привіт світе' },
+            { tag: '记录', lang: 'zh', text: '你好，世界' },
+        ]
+
+        languages.forEach(({ tag, lang, text }) => {
+            it(`should parse lang=${lang}`, function () {
+                const node = xmlParser(`<root><${tag} lang="${lang}">${text}</${tag}></root>`);
+
+                assert.equal(node.root.type, 'Element');
+                assert.equal(node.root.name, 'root');
+                assert.deepEqual(node.root.attributes, {});
+                assert.isArray(node.root.children);
+                assert.lengthOf(node.root.children || [], 1, `lang=${lang}`);
+
+                const record = (node.root.children || [])[0] as XmlParserElementNode;
+                assert.equal(record.type, 'Element', `lang=${lang}`);
+                assert.equal(record.name, tag, `lang=${lang}`);
+                assert.deepEqual(record.attributes, { lang }, `lang=${lang}`);
+                assert.deepEqual(record.children, [{ type: 'Text', content: text }], `lang=${lang}`);
+            })
+        })
+    });
+
     it('should trim the input', function() {
         const node = xmlParser('   <foo></foo>   ');
         assert.deepEqual(node.root, {
