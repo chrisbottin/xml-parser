@@ -25,7 +25,7 @@ npm run test
 
 npm version $VERSION_BUMP -m "Version Bump to %s ($VERSION_BUMP)"
 
-newVersion=`npm view . --silent version`
+newVersion=`node -e "console.log(require('./package.json').version);"`
 
 git tag $newVersion
 
