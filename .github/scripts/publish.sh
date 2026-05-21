@@ -10,7 +10,7 @@ echo "                                                              |___/ "
 echo "This script will publish a new version to NPM, create a version bump git commit, tag it and push it."
 
 branchName=`git rev-parse --abbrev-ref HEAD`
-mainBranchName="main"
+mainBranchName="master"
 
 if [[ $branchName != ${mainBranchName} ]]; then
   echo "Current branch is $branchName. Only the main branch can be published."
